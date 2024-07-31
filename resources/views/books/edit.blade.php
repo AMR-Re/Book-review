@@ -71,8 +71,8 @@
                     <div class="mb-3">
                         <label for="author" class="form-label">Status</label>
                         <select name="status" id="status" class="form-control">
-                            <option value="1"{{$book->status==1 : 'selected' ? ''}}>Active</option>
-                            <option value="0" {{$book->status==0 : 'selected' ? ''}} >Block</option>
+                            <option value="1"{{($book->status==1)? 'selected' : ''}}>Active</option>
+                            <option value="0" {{($book->status==0) ? 'selected' : ''}} >Block</option>
                         </select>
                     </div>
 

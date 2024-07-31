@@ -109,7 +109,7 @@ class BookController extends Controller
             return redirect()->route('books.edit',$book->id)->withInput()->withErrors($validator);
          }
 //update book in DB 
-    $book=new Book();
+
     $book->title=$request->title;
     $book->author=$request->author;
     $book->description=$request->description;
