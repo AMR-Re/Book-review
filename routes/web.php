@@ -9,6 +9,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/', [HomeController::class,'index'])->name('home');
+Route::get('/book/{id}', [HomeController::class,'detail'])->name('book.detail');
+
 
 Route::group(['prefix'=>'account'],function()  {
     Route::group(['middleware'=>'guest'],function(){

@@ -16,16 +16,37 @@ class HomeController extends Controller
         $book->Where('keyword','like','%'.$request->keyword.'%');
 
         }
-       $book=$book->Where('status',1)->paginate(1);
+       $book=$book->Where('status',1)->paginate(3);
         return view('home',
         [
             'books'=>$book,
         ]);
     }
 
+
+/**
+     * Show book details
+     */
+
+
+
+
+    public fUnction detail($id)
+    {
+        $book=Book::findOrFail($id);
+        if($book->status==0){
+            abort(404);
+        }
+        $relatedBooks=Book::where('status',1)->take(3)->where('id','!=',$id)->inRandomOrder()->get();
+        return view('book-details',[
+            'book'=>$book,
+            'relatedBooks'=>$relatedBooks,
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
+
     public function create()
     {
         //
