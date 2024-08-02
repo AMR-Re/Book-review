@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Review;
+
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -127,5 +129,20 @@ class AccountController extends Controller
    Auth::logout();
    return redirect()->route('account.login');
   
+ }
+
+ public function myReviews(Request $request)
+ {
+    $reviews=Review::with('book')->where('user_id',Auth::user()->id);
+    $reviews=$reviews->orderBy('created_at','DESC');
+    if(!empty($request->Keyword))
+        {
+            $reviews=$reviews->where('reviews','like','%'.$request->Keyword.'%');
+
+        }
+    $reviews=$reviews->paginate(5);
+    return view('account.my-reviews',[
+        'reviews'=>$reviews,
+    ]);
  }
 }

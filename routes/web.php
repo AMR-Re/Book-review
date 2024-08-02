@@ -44,6 +44,7 @@ Route::group(['prefix'=>'account'],function()  {
         Route::post('delete-review', [ReviewController::class,'deleteReview'])->name('account.reviews.deleteReview');
 
 
+        Route::get('/my-reviews', [AccountController::class,'myReviews'])->name('account.my-reviews');
 
 
 
