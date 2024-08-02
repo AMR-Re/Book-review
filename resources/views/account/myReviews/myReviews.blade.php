@@ -7,7 +7,7 @@
           @include('layouts.sidebar')             
         </div>
         <div class="col-md-9">
-            
+            @include('layouts.message')
             <div class="card border-0 shadow">
                 <div class="card-header  text-white">
                     My Reviews
@@ -18,7 +18,7 @@
                             <div class="d-flex">
                                 <input type="text" class="form-control" value="{{Request::get('Keyword')}}" placeholder="Keyword"  name="Keyword">    
                                 <button type="submit" class="btn btn-primary ms-2">Search</button>
-                                <a href="{{route('account.my-reviews')}}" class="btn btn-secondary ms-2">Clear</a>
+                                <a href="{{route('account.myReviews')}}" class="btn btn-secondary ms-2">Clear</a>
                             </div> 
                         </form>      
                     </div>          
@@ -46,9 +46,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="edit-review.html" class="btn btn-primary btn-sm"><i class="fa-regular fa-pen-to-square"></i>
+                                        <a href="{{route('account.myReviews.editReview',$review->id)}}" class="btn btn-primary btn-sm"><i class="fa-regular fa-pen-to-square"></i>
                                         </a>
-                                        <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
+                                        <a href="javascript:void()" onclick="deleteReview({{$review->id}})" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
                                     </td>
                                 </tr> 
                                 @endforeach        
@@ -64,4 +64,32 @@
         </div>
     </div>       
 </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+function deleteReview(id)
+    {
+        if(confirm("Are You sure you want to delete review ?"))
+        {
+            $.ajax({
+                url: '{{route("account.myReviews.deleteReview")}}',
+                type: 'post',
+                data:{id:id},
+                datatype:'json',
+                headers:
+                {
+                    'X-CSRF-TOKEN':'{{csrf_token()}}'
+                },
+                success: function(response)
+                {
+                    window.location.href='{{route("account.myReviews")}}';
+
+                }
+
+            });
+        }
+    }
+
+    </script>
 @endsection

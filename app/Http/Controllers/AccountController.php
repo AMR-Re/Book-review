@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Review;
-
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -141,8 +141,63 @@ class AccountController extends Controller
 
         }
     $reviews=$reviews->paginate(5);
-    return view('account.my-reviews',[
+    return view('account.myReviews.myReviews',[
         'reviews'=>$reviews,
     ]);
  }
+
+
+ public function editReview($id) 
+  {
+    $reviews=Review::where(
+        [
+            'id'=>$id,
+            'user_id'=>Auth::user()->id,
+
+        ]
+    )->with('book')->first();
+    return view('account.myReviews.edit-review',[
+        'reviews'=>$reviews,
+    ]);
+    
+ }
+ public function updateReview($id,Request $request)
+ {
+     $review=Review::findOrFail($id);
+
+     $validator=Validator::make($request->all(),[
+         'reviews'=>'required',
+         'rating'=>'required'
+     ]);
+     if($validator->fails())
+     {
+         return redirect()->route('account.reviews.editReview',$id)->withInput()->withErrors($validator);
+     }
+     $review->reviews=$request->reviews;
+     $review->rating=$request->rating;
+     $review->save();
+
+     session()->flash('success','review updated successfully');
+     return redirect()->route('account.reviews');
+ }
+
+ public function deleteReview(Request $request) 
+  {
+    $id =$request->id;
+    $review=Review::find($id);
+    if($review==null)
+    {
+        session()->flash('error','Review Not found');
+        return response()->json([
+            'status'=>false,
+        ]);
+    }else{
+        $review->delete();
+        session()->flash('success','Review deleted Successfully');
+        return response()->json([
+            'status'=>true,
+        ]);
+    }
+ }
+
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
-
+use App\Http\Controller\AccountController;
 use Illuminate\Http\Request;
 use App\Models\Review;
 class ReviewController extends Controller
@@ -35,26 +35,7 @@ class ReviewController extends Controller
         ]);
     } 
 
-    public function updateReview($id,Request $request)
-    {
-        $review=Review::findOrFail($id);
-
-        $validator=Validator::make($request->all(),[
-            'reviews'=>'required',
-            'status'=>'required'
-        ]);
-        if($validator->fails())
-        {
-            return redirect()->route('account.reviews.edit',$id)->withInput()->withErrors($validator);
-        }
-        $review->reviews=$request->reviews;
-        $review->status=$request->status;
-        $review->save();
-
-        session()->flash('success','review updated successfully');
-        return redirect()->route('account.reviews');
-    }
-
+   
     public function deleteReview(Request $request)
     {
         $id =$request->id;
