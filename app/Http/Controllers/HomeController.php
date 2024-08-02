@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 use  App\Models\Book;
+use  App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 class HomeController extends Controller
 {
@@ -33,7 +37,10 @@ class HomeController extends Controller
 
     public fUnction detail($id)
     {
-        $book=Book::findOrFail($id);
+        $book=Book::with(['reviews.user','reviews'=>function($query){
+            $query->where('status',1);
+        }])->findOrFail($id);
+
         if($book->status==0){
             abort(404);
         }
@@ -43,52 +50,41 @@ class HomeController extends Controller
             'relatedBooks'=>$relatedBooks,
         ]);
     }
-    /**
-     * Show the form for creating a new resource.
-     */
-
-    public function create()
+    // save user 's review 
+    public function saveReview(Request $request)
     {
-        //
-    }
+        $validator=Validator::make($request->all(),[
+            'review'=>'required|min:5',
+            'rating'=>'required',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'status'=>false,
+                'errors'=>$validator->errors()
+            ]);
+        }
+        $countReview=Review::where('user_id',Auth::user()->id)->where('book_id',$request->book_id)->count();
+        if($countReview > 0)
+        {
+        session()->flash('error','You already submitted a review');
+            return response()->json([
+                'status'=>true,
+            ]);
+        }
+        $review=new Review();
+        $review->reviews=$request->review;
+        $review->rating=$request->rating;
+        $review->user_id=Auth::user()->id;
+        $review->book_id=$request->book_id;
+        $review->save();
+        session()->flash('success','Review submitted');
+        return response()->json([
+            'status'=>true,
+           
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    } 
+    
 }
