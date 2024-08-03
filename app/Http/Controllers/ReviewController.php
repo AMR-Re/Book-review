@@ -34,6 +34,26 @@ class ReviewController extends Controller
             'reviews'=>$review,
         ]);
     } 
+    public function updateReview($id,Request $request)
+ {
+     $review=Review::findOrFail($id);
+
+     $validator=Validator::make($request->all(),[
+         'reviews'=>'required',
+         'status'=>'required'
+     ]);
+     if($validator->fails())
+     {
+         return redirect()->route('account.reviews.editReview',$id)->withInput()->withErrors($validator);
+     }
+     $review->reviews=$request->reviews;
+     $review->status=$request->status;
+     $review->save();
+
+     session()->flash('success','review updated successfully');
+     return redirect()->route('account.reviews');
+ }
+
 
    
     public function deleteReview(Request $request)

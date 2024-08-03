@@ -37,7 +37,15 @@
                                 <tr>
                                     <td>{{$book->title}}</td>
                                     <td>{{$book->author}}</td>
-                                    <td>3.0 (3 Reviews)</td>
+                                    @if($book->reviews->isNotEmpty())
+                                    @foreach($book->reviews as $review)
+                                    <td>{{$review->rating}}</td>
+                                  
+
+                                    @endforeach
+                                    @else
+                                    <td>NA</td>
+                                    @endif
                                     <td>
                                         @if($book->status==1)
                                         <span class="text-success">Active</span>
