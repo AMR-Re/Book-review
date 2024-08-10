@@ -14,13 +14,15 @@ class HomeController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {   $book=Book::orderBy('created_at','DESC');
+    {   $book=Book::withCount('reviews')->withSum('reviews','rating')->orderBy('created_at','DESC');
         if(!empty($request->keyword))
         {
         $book->Where('keyword','like','%'.$request->keyword.'%');
 
         }
        $book=$book->Where('status',1)->paginate(3);
+       
+    //    dd($book);
         return view('home',
         [
             'books'=>$book,
@@ -39,13 +41,17 @@ class HomeController extends Controller
     {
         $book=Book::with(['reviews.user','reviews'=>function($query){
             $query->where('status',1);
-        }])->findOrFail($id);
+        }])->withCount('reviews')->withSum('reviews','rating')->findOrFail($id);
 
         if($book->status==0){
             abort(404);
         }
-        $relatedBooks=Book::where('status',1)->take(3)->where('id','!=',$id)->inRandomOrder()->get();
-        return view('book-details',[
+        $relatedBooks=Book::where('status',1)
+                            ->withCount('reviews')
+                            ->withSum('reviews','rating')
+                            ->take(3)->where('id','!=',$id)->inRandomOrder()->get();
+                            //  dd($relatedBooks);
+          return view('book-details',[
             'book'=>$book,
             'relatedBooks'=>$relatedBooks,
         ]);

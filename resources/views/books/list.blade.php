@@ -11,7 +11,7 @@
                 <div class="card-header  text-white">
                     Books
                 </div>
-                <div class="card-body pb-0">            
+                <div class="card-body pb-0" >            
                     <div class="d-flex justify-content-between">
                     <a href="{{route('books.create')}}" class="btn btn-primary">Add Book</a>     
                         <form action="" method="get">
@@ -22,11 +22,11 @@
                             </div> 
                         </form>      
                     </div>
-                    <table class="table  table-striped mt-3">
+                    <table class="table  table-striped mt-3" >
                         <thead class="table-dark">
                             <tr>
-                                <th>Title</th>
-                                <th>Author</th>
+                                <th colspan="">Title</th>
+                                <th rowspan="">Author</th>
                                 <th>Rating</th>
                                 <th>Status</th>
                                 <th width="150">Action</th>
@@ -34,20 +34,30 @@
                             <tbody>
                                 @if($books->isNotEmpty())
                                 @foreach($books as $book)
+                                @php
+                                if($book->reviews_count > 0)
+                                    {
+                                    $avgRating=$book->reviews_sum_rating/$book->reviews_count;
+                                    }
+                                    else{
+                                        $avgRating=0;
+                                    }
+                                    $avgRatingPer=($avgRating*100)/5;
+                                @endphp
                                 <tr>
                                     <td>{{$book->title}}</td>
                                     <td>{{$book->author}}</td>
                                     @if($book->reviews->isNotEmpty())
-                                    @foreach($book->reviews as $review)
-                                    <td>{{$review->rating}}</td>
+                                    {{-- @foreach($book->reviews as $review) --}}
+                                    <td>{{number_format($avgRating,1)}} ({{($book->reviews_count > 1) ? $book->reviews_count.' Reviews':$book->reviews_count.' Review' }})</td>
                                   
 
-                                    @endforeach
+                                    {{-- @endforeach --}}
                                     @else
                                     <td>NA</td>
                                     @endif
                                     <td>
-                                        @if($book->status==1)
+                                        @if($book->status == 1 )
                                         <span class="text-success">Active</span>
                                         @else
                                         
